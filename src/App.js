@@ -57,7 +57,7 @@ function App() {
         resetTurn()
       } else {
         console.log("Cards do not match")
-        resetTurn()
+        setTimeout(() => resetTurn(), 1000)
       }
     }
   }, [choiceOne, choiceTwo])
