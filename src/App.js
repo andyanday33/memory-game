@@ -39,6 +39,7 @@ function App() {
 
   //compare selected cards
   useEffect(() => {
+    console.log(choiceOne?.id)
     if (choiceOne && choiceTwo) {
       if(choiceOne.src === choiceTwo.src && choiceOne.id !== choiceTwo.id) {
         setCards(prevCards => {
@@ -78,7 +79,7 @@ function App() {
           key={card.id} 
           card={card} 
           handleClick={handleChoice}
-          flipped={card.src === choiceOne?.src || card === choiceTwo || card.matched}
+          flipped={card.id === Number(choiceOne?.id) || card.id === Number(choiceTwo?.id) || card.matched}
           />
         ))}
       </div>
