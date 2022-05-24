@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './App.css';
 import SingleCard from './components/SingeCard';
 
@@ -19,7 +19,9 @@ function App() {
   const [choiceOne, setChoiceOne] = useState(null);
   const [choiceTwo, setChoiceTwo] = useState(null);
   const [disabled, setDisabled] = useState(false);
+  const [gameWon, setGameWon] = useState(false);
 
+  const numberOfFlippedCards = useRef(0);
   //shuffle cards
   const shuffleCards = () => {
     //Take twelve cards and shuffle them randomly
@@ -29,6 +31,7 @@ function App() {
 
     setChoiceOne(null);
     setChoiceTwo(null);
+    setGameWon(false);
     setCards(shuffledCards);
     setTurns(0);
   }
@@ -41,10 +44,10 @@ function App() {
 
   //compare selected cards
   useEffect(() => {
-    console.log(choiceOne?.id)
     if (choiceOne && choiceTwo) {
       setDisabled(true)
       if(choiceOne.src === choiceTwo.src && choiceOne.id !== choiceTwo.id) {
+        numberOfFlippedCards.current = numberOfFlippedCards.current + 2;
         setCards(prevCards => {
           return prevCards.map(card => {
             // const regex = /http(s)*:\/\/(www\.)*[a-zA-Z0-9.:]*\//g;
@@ -57,9 +60,12 @@ function App() {
             }
           })
         })
+
+        if(numberOfFlippedCards.current === 12) {
+          setGameWon(true)
+        }
         resetTurn()
       } else {
-        console.log("Cards do not match")
         setTimeout(() => resetTurn(), 1000)
       }
     }
@@ -80,6 +86,7 @@ function App() {
   return (
     <div className="App">
       <h1>Memory Game</h1>
+      {gameWon && (<h2>Game Won!</h2>)}
       <button onClick={shuffleCards}>New Game</button>
 
       <div className="card-grid">
