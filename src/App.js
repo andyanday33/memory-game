@@ -21,7 +21,6 @@ function App() {
   const [disabled, setDisabled] = useState(false);
   const [gameWon, setGameWon] = useState(false);
 
-  const numberOfFlippedCards = useRef(0);
   //shuffle cards
   const shuffleCards = () => {
     //Take twelve cards and shuffle them randomly
@@ -47,7 +46,6 @@ function App() {
     if (choiceOne && choiceTwo) {
       setDisabled(true)
       if(choiceOne.src === choiceTwo.src && choiceOne.id !== choiceTwo.id) {
-        numberOfFlippedCards.current = numberOfFlippedCards.current + 2;
         setCards(prevCards => {
           return prevCards.map(card => {
             // const regex = /http(s)*:\/\/(www\.)*[a-zA-Z0-9.:]*\//g;
@@ -61,9 +59,6 @@ function App() {
           })
         })
 
-        if(numberOfFlippedCards.current === 12) {
-          setGameWon(true)
-        }
         resetTurn()
       } else {
         setTimeout(() => resetTurn(), 1000)
@@ -78,10 +73,32 @@ function App() {
     setDisabled(false)
   }
 
+  useEffect(() => {
+      //Check if there is a non-flipped card left
+      //This is async since we do not need to wait this in order to
+      //game to continue. This only affects whether the Game Won heading
+      //is going to be shown
+      const checkGameWon = async () => {
+        let found = false
+        cards.forEach((card, index, array) => {
+          if(!card.matched) {
+            found = true
+            }
+        })
+        if(!found) {
+          setGameWon(true)
+        }
+      }
+
+      checkGameWon()
+  }, [cards])
+
   //Start the game automatically
   useEffect(() => {
     shuffleCards()
   }, [])
+
+  
 
   return (
     <div className="App">
