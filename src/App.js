@@ -18,6 +18,7 @@ function App() {
   const [turns, setTurns] = useState(0);
   const [choiceOne, setChoiceOne] = useState(null);
   const [choiceTwo, setChoiceTwo] = useState(null);
+  const [disabled, setDisabled] = useState(false);
 
   //shuffle cards
   const shuffleCards = () => {
@@ -32,22 +33,22 @@ function App() {
 
   
   //handle card choice
-  const handleChoice = ({ target }) => {
-    const cardFront = target.parentElement.children[0]
-    choiceOne ? setChoiceTwo(cardFront) : setChoiceOne(cardFront)
+  const handleChoice = (card) => {
+    choiceOne ? setChoiceTwo(card) : setChoiceOne(card)
   }
 
   //compare selected cards
   useEffect(() => {
     console.log(choiceOne?.id)
     if (choiceOne && choiceTwo) {
+      setDisabled(true)
       if(choiceOne.src === choiceTwo.src && choiceOne.id !== choiceTwo.id) {
         setCards(prevCards => {
           return prevCards.map(card => {
-            const regex = /http(s)*:\/\/(www\.)*[a-zA-Z0-9.:]*\//g;
-            //Delete preceding text from url (http:/localhost:8080/ or something)
-            let choiceOneSource = choiceOne.src.replace(regex, '/')
-            if (card.src === choiceOneSource) {
+            // const regex = /http(s)*:\/\/(www\.)*[a-zA-Z0-9.:]*\//g;
+            // //Delete preceding text from url (http:/localhost:8080/ or something)
+            // let choiceOneSource = choiceOne.src.replace(regex, '/')
+            if (card.src === choiceOne.src) {
               return {...card, matched: true}
             } else {
               return card
@@ -66,6 +67,7 @@ function App() {
     setChoiceOne(null)
     setChoiceTwo(null)
     setTurns(prevTurns => prevTurns + 1)
+    setDisabled(false)
   }
 
   return (
@@ -78,8 +80,9 @@ function App() {
           <SingleCard 
           key={card.id} 
           card={card} 
-          handleClick={handleChoice}
-          flipped={card.id === Number(choiceOne?.id) || card.id === Number(choiceTwo?.id) || card.matched}
+          handleChoice={handleChoice}
+          flipped={card === choiceOne || card === choiceTwo || card.matched}
+          disabled={disabled}
           />
         ))}
       </div>
